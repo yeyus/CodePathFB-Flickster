@@ -15,10 +15,19 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import static com.ea7jmf.flickster.R.id.tvOverview;
+import static com.ea7jmf.flickster.R.id.tvTitle;
+
 public class MovieArrayAdapter extends ArrayAdapter<Movie> {
 
+    private static class ViewHolder {
+        TextView tvTitle;
+        TextView tvOverview;
+        ImageView ivImage;
+    }
+
     public MovieArrayAdapter(Context context, List<Movie> objects) {
-        super(context, android.R.layout.simple_list_item_1, objects);
+        super(context, R.layout.item_movie, objects);
     }
 
     @NonNull
@@ -27,23 +36,28 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
         Movie movie = getItem(position);
 
         // Check if the existing view has been reused
+        ViewHolder viewHolder;
         if (convertView == null) {
+            viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.item_movie, parent, false);
+            viewHolder.tvTitle = (TextView) convertView.findViewById(tvTitle);
+            viewHolder.tvOverview = (TextView) convertView.findViewById(tvOverview);
+            viewHolder.ivImage = (ImageView) convertView.findViewById(R.id.ivMovieImage);
+
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        ImageView ivImage = (ImageView) convertView.findViewById(R.id.ivMovieImage);
-        ivImage.setImageResource(0);
+        viewHolder.ivImage.setImageResource(0);
 
-        TextView tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
-        TextView tvOverview = (TextView) convertView.findViewById(R.id.tvOverview);
-
-        tvTitle.setText(movie.getOriginalTitle());
-        tvOverview.setText(movie.getOverview());
+        viewHolder.tvTitle.setText(movie.getOriginalTitle());
+        viewHolder.tvOverview.setText(movie.getOverview());
 
         Picasso.with(getContext())
                 .load(movie.getPosterPath())
-                .into(ivImage);
+                .into(viewHolder.ivImage);
 
         return convertView;
     }
