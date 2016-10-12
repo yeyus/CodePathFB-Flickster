@@ -64,6 +64,7 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
 
         Picasso.with(getContext())
                 .load(imageUrl)
+                .placeholder(R.mipmap.poster_placeholder)
                 .into(viewHolder.ivImage);
 
         return convertView;
