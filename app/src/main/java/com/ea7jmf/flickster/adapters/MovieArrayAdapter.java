@@ -109,7 +109,7 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
                 imageUrl = movie.getBackdropPath();
                 Picasso.with(getContext())
                         .load(imageUrl)
-                        .placeholder(R.mipmap.poster_placeholder)
+                        .placeholder(R.drawable.video_placeholder)
                         .into(fbViewHolder.ivBackdrop);
                 break;
         }
