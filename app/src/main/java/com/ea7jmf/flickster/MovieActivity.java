@@ -1,8 +1,11 @@
 package com.ea7jmf.flickster;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.ea7jmf.flickster.adapters.MovieArrayAdapter;
@@ -43,6 +46,15 @@ public class MovieActivity extends AppCompatActivity {
 
         client = new AsyncHttpClient();
         fetchNowPlaying();
+
+        lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(MovieActivity.this, DetailActivity.class);
+                i.putExtra("movie", movies.get(position));
+                startActivity(i);
+            }
+        });
 
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

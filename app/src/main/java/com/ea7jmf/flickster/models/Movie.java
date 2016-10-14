@@ -1,18 +1,22 @@
 package com.ea7jmf.flickster.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class Movie {
+public class Movie implements Parcelable {
 
     String posterPath;
     String backdropPath;
     String originalTitle;
     String overview;
     Double voteAverage;
+    Double popularity;
 
     public String getPosterPath() {
         return String.format("https://image.tmdb.org/t/p/w342/%s", posterPath);
@@ -34,6 +38,10 @@ public class Movie {
         return voteAverage;
     }
 
+    public Double getPopularity() {
+        return popularity;
+    }
+
     public boolean isOverRating(Double rating) {
         return voteAverage > rating;
     }
@@ -44,6 +52,7 @@ public class Movie {
         this.originalTitle = jsonObject.getString("original_title");
         this.overview = jsonObject.getString("overview");
         this.voteAverage = jsonObject.getDouble("vote_average");
+        this.popularity = jsonObject.getDouble("popularity");
     }
 
     public static ArrayList<Movie> fromJsonArray(JSONArray jsonArray) {
@@ -59,4 +68,51 @@ public class Movie {
 
         return results;
     }
+
+    protected Movie(Parcel in) {
+        posterPath = in.readString();
+        backdropPath = in.readString();
+        originalTitle = in.readString();
+        overview = in.readString();
+        voteAverage = in.readByte() == 0x00 ? null : in.readDouble();
+        popularity = in.readByte() == 0x00 ? null : in.readDouble();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(posterPath);
+        dest.writeString(backdropPath);
+        dest.writeString(originalTitle);
+        dest.writeString(overview);
+        if (voteAverage == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeDouble(voteAverage);
+        }
+        if (popularity == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeDouble(popularity);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 }
