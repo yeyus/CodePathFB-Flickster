@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/ratingBar"
         android:layout_centerHorizontal="true"
+        android:textStyle="bold"
         android:id="@+id/tvRating" />
 
     <TextView
@@ -29,7 +30,10 @@
         android:id="@+id/tvOverview"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="@dimen/detail_overview_margin"
+        android:layout_marginBottom="@dimen/detail_overview_margin"
+        android:layout_marginRight="@dimen/detail_overview_margin"
+        android:layout_marginLeft="@dimen/detail_overview_margin" />
 
     <ImageView
         android:layout_width="wrap_content"
