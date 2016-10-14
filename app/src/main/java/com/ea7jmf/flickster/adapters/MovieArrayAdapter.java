@@ -21,52 +21,109 @@ import static com.ea7jmf.flickster.R.id.tvTitle;
 
 public class MovieArrayAdapter extends ArrayAdapter<Movie> {
 
-    private static class ViewHolder {
+    private enum ItemType {
+        POSTER_ITEM,
+        FULL_BACKDROP_ITEM
+    }
+
+    private static class PosterItemViewHolder {
         TextView tvTitle;
         TextView tvOverview;
-        ImageView ivImage;
+        ImageView ivPoster;
+    }
+
+    private static class FullBackdropItemViewHolder {
+        ImageView ivBackdrop;
     }
 
     public MovieArrayAdapter(Context context, List<Movie> objects) {
         super(context, R.layout.item_movie, objects);
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return getItem(position).isOverRating(5.0d) ?
+                ItemType.FULL_BACKDROP_ITEM.ordinal() : ItemType.POSTER_ITEM.ordinal();
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return ItemType.values().length;
+    }
+
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        String imageUrl;
         Movie movie = getItem(position);
+        ItemType type = ItemType.values()[getItemViewType(position)];
 
         // Check if the existing view has been reused
-        ViewHolder viewHolder;
-        if (convertView == null) {
-            viewHolder = new ViewHolder();
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.item_movie, parent, false);
-            viewHolder.tvTitle = (TextView) convertView.findViewById(tvTitle);
-            viewHolder.tvOverview = (TextView) convertView.findViewById(tvOverview);
-            viewHolder.ivImage = (ImageView) convertView.findViewById(R.id.ivMovieImage);
+        switch (type) {
+            case POSTER_ITEM:
+                PosterItemViewHolder piViewHolder;
+                if (convertView == null) {
+                    piViewHolder = new PosterItemViewHolder();
+                    convertView = getInflatedLayoutForType(type);
 
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
+                    piViewHolder.tvTitle = (TextView) convertView.findViewById(tvTitle);
+                    piViewHolder.tvOverview = (TextView) convertView.findViewById(tvOverview);
+                    piViewHolder.ivPoster = (ImageView) convertView.findViewById(R.id.ivMovieImage);
+
+                    convertView.setTag(piViewHolder);
+                } else {
+                    piViewHolder = (PosterItemViewHolder) convertView.getTag();
+                }
+
+                piViewHolder.ivPoster.setImageResource(0);
+
+                piViewHolder.tvTitle.setText(movie.getOriginalTitle());
+                piViewHolder.tvOverview.setText(movie.getOverview());
+
+                imageUrl = movie.getPosterPath();
+                int orientation = getContext().getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    imageUrl = movie.getBackdropPath();
+                }
+
+                Picasso.with(getContext())
+                        .load(imageUrl)
+                        .placeholder(R.mipmap.poster_placeholder)
+                        .into(piViewHolder.ivPoster);
+                break;
+            case FULL_BACKDROP_ITEM:
+                FullBackdropItemViewHolder fbViewHolder;
+                if (convertView == null) {
+                    fbViewHolder = new FullBackdropItemViewHolder();
+                    convertView = getInflatedLayoutForType(type);
+
+                    fbViewHolder.ivBackdrop = (ImageView) convertView.findViewById(R.id.ivMovieFrame);
+
+                    convertView.setTag(fbViewHolder);
+                } else {
+                    fbViewHolder = (FullBackdropItemViewHolder) convertView.getTag();
+                }
+
+                fbViewHolder.ivBackdrop.setImageResource(0);
+
+                imageUrl = movie.getBackdropPath();
+                Picasso.with(getContext())
+                        .load(imageUrl)
+                        .placeholder(R.mipmap.poster_placeholder)
+                        .into(fbViewHolder.ivBackdrop);
+                break;
         }
-
-        viewHolder.ivImage.setImageResource(0);
-
-        viewHolder.tvTitle.setText(movie.getOriginalTitle());
-        viewHolder.tvOverview.setText(movie.getOverview());
-
-        String imageUrl = movie.getPosterPath();
-        int orientation = getContext().getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            imageUrl = movie.getBackdropPath();
-        }
-
-        Picasso.with(getContext())
-                .load(imageUrl)
-                .placeholder(R.mipmap.poster_placeholder)
-                .into(viewHolder.ivImage);
 
         return convertView;
+    }
+
+    private View getInflatedLayoutForType(ItemType type) {
+        if (type == ItemType.FULL_BACKDROP_ITEM) {
+            return LayoutInflater.from(getContext()).inflate(R.layout.item_popular_movie, null);
+        } else if (type == ItemType.POSTER_ITEM) {
+            return LayoutInflater.from(getContext()).inflate(R.layout.item_movie, null);
+        } else {
+            return null;
+        }
     }
 }
