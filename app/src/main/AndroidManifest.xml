@@ -10,6 +10,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data android:name="YOUTUBE_API_KEY" android:value="AIzaSyDPd7QIkA1jpdW9Cjjf0NXnn8K9rt03KLQ" />
+
         <activity android:name=".MovieActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -17,7 +20,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DetailActivity"></activity>
+        <activity android:name=".DetailActivity" />
+        <activity
+            android:name=".TrailerActivity"
+            android:screenOrientation="landscape">
+        </activity>
     </application>
 
 </manifest>

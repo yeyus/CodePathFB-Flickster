@@ -50,9 +50,24 @@ public class MovieActivity extends AppCompatActivity {
         lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(MovieActivity.this, DetailActivity.class);
-                i.putExtra("movie", movies.get(position));
-                startActivity(i);
+                int typeOrdinal = parent.getAdapter().getItemViewType(position);
+                MovieArrayAdapter.ItemType type = MovieArrayAdapter.ItemType.values()[typeOrdinal];
+
+                Intent i;
+                switch(type) {
+                    case FULL_BACKDROP_ITEM:
+                        i = new Intent(MovieActivity.this, TrailerActivity.class);
+                        i.putExtra("movie_id", movies.get(position).getId());
+                        startActivity(i);
+                        break;
+                    case POSTER_ITEM:
+                        i = new Intent(MovieActivity.this, DetailActivity.class);
+                        i.putExtra("movie", movies.get(position));
+                        startActivity(i);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unknown list item type");
+                }
             }
         });
 

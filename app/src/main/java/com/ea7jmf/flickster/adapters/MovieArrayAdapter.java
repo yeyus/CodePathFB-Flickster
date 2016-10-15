@@ -21,7 +21,7 @@ import static com.ea7jmf.flickster.R.id.tvTitle;
 
 public class MovieArrayAdapter extends ArrayAdapter<Movie> {
 
-    private enum ItemType {
+    public enum ItemType {
         POSTER_ITEM,
         FULL_BACKDROP_ITEM
     }

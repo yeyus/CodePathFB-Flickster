@@ -11,12 +11,17 @@ import java.util.ArrayList;
 
 public class Movie implements Parcelable {
 
+    Integer id;
     String posterPath;
     String backdropPath;
     String originalTitle;
     String overview;
     Double voteAverage;
     Double popularity;
+
+    public Integer getId() {
+        return id;
+    }
 
     public String getPosterPath() {
         return String.format("https://image.tmdb.org/t/p/w342/%s", posterPath);
@@ -47,6 +52,7 @@ public class Movie implements Parcelable {
     }
 
     public Movie(JSONObject jsonObject) throws JSONException {
+        this.id = jsonObject.getInt("id");
         this.posterPath = jsonObject.getString("poster_path");
         this.backdropPath = jsonObject.getString("backdrop_path");
         this.originalTitle = jsonObject.getString("original_title");
@@ -70,6 +76,7 @@ public class Movie implements Parcelable {
     }
 
     protected Movie(Parcel in) {
+        id = in.readByte() == 0x00 ? null : in.readInt();
         posterPath = in.readString();
         backdropPath = in.readString();
         originalTitle = in.readString();
@@ -85,6 +92,12 @@ public class Movie implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(id);
+        }
         dest.writeString(posterPath);
         dest.writeString(backdropPath);
         dest.writeString(originalTitle);
