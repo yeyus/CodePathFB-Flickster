@@ -16,10 +16,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
-
-import static com.ea7jmf.flickster.R.id.tvOverview;
-import static com.ea7jmf.flickster.R.id.tvTitle;
 
 public class MovieArrayAdapter extends ArrayAdapter<Movie> {
 
@@ -28,15 +27,23 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
         FULL_BACKDROP_ITEM
     }
 
-    private static class PosterItemViewHolder {
-        TextView tvTitle;
-        TextView tvOverview;
-        ImageView ivPoster;
+    static class PosterItemViewHolder {
+        @BindView(R.id.tvTitle) TextView tvTitle;
+        @BindView(R.id.tvOverview) TextView tvOverview;
+        @BindView(R.id.ivMovieImage) ImageView ivPoster;
+
+        public PosterItemViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
     }
 
-    private static class FullBackdropItemViewHolder {
-        TextView tvTitle;
-        ImageView ivBackdrop;
+    static class FullBackdropItemViewHolder {
+        @BindView(R.id.tvMovieTitle) TextView tvTitle;
+        @BindView(R.id.ivMovieFrame) ImageView ivBackdrop;
+
+        public FullBackdropItemViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
     }
 
     public MovieArrayAdapter(Context context, List<Movie> objects) {
@@ -66,13 +73,8 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
             case POSTER_ITEM:
                 PosterItemViewHolder piViewHolder;
                 if (convertView == null) {
-                    piViewHolder = new PosterItemViewHolder();
                     convertView = getInflatedLayoutForType(type);
-
-                    piViewHolder.tvTitle = (TextView) convertView.findViewById(tvTitle);
-                    piViewHolder.tvOverview = (TextView) convertView.findViewById(tvOverview);
-                    piViewHolder.ivPoster = (ImageView) convertView.findViewById(R.id.ivMovieImage);
-
+                    piViewHolder = new PosterItemViewHolder(convertView);
                     convertView.setTag(piViewHolder);
                 } else {
                     piViewHolder = (PosterItemViewHolder) convertView.getTag();
@@ -98,12 +100,8 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
             case FULL_BACKDROP_ITEM:
                 FullBackdropItemViewHolder fbViewHolder;
                 if (convertView == null) {
-                    fbViewHolder = new FullBackdropItemViewHolder();
                     convertView = getInflatedLayoutForType(type);
-
-                    fbViewHolder.ivBackdrop = (ImageView) convertView.findViewById(R.id.ivMovieFrame);
-                    fbViewHolder.tvTitle = (TextView) convertView.findViewById(R.id.tvMovieTitle);
-
+                    fbViewHolder = new FullBackdropItemViewHolder(convertView);
                     convertView.setTag(fbViewHolder);
                 } else {
                     fbViewHolder = (FullBackdropItemViewHolder) convertView.getTag();
