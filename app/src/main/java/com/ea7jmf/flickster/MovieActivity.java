@@ -10,25 +10,29 @@ import android.widget.ListView;
 
 import com.ea7jmf.flickster.adapters.MovieArrayAdapter;
 import com.ea7jmf.flickster.models.Movie;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnItemClick;
-import cz.msebera.android.httpclient.Header;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class MovieActivity extends AppCompatActivity {
 
     private static String url = "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed";
 
-    AsyncHttpClient client;
+    OkHttpClient client;
     ArrayList<Movie> movies;
     MovieArrayAdapter movieAdapter;
 
@@ -45,7 +49,7 @@ public class MovieActivity extends AppCompatActivity {
         movieAdapter = new MovieArrayAdapter(this, movies);
         lvItems.setAdapter(movieAdapter);
 
-        client = new AsyncHttpClient();
+        client = new OkHttpClient();
         fetchNowPlaying();
 
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -63,27 +67,50 @@ public class MovieActivity extends AppCompatActivity {
     }
 
     private void fetchNowPlaying() {
-        client.get(url, new JsonHttpResponseHandler() {
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
+        String url = urlBuilder.build().toString();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+            public void onFailure(Call call, IOException e) {
+                MovieActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeContainer.setRefreshing(false);
+                    }
+                });
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected code " + response);
+                }
+
                 JSONArray moviesJsonResults = null;
                 try {
-                    moviesJsonResults = response.getJSONArray("results");
+                    String responseData = response.body().string();
+                    JSONObject json = new JSONObject(responseData);
+                    moviesJsonResults = json.getJSONArray("results");
                     movies.clear();
                     movies.addAll(Movie.fromJsonArray(moviesJsonResults));
-                    movieAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                swipeContainer.setRefreshing(false);
-            }
+                MovieActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        movieAdapter.notifyDataSetChanged();
+                        swipeContainer.setRefreshing(false);
+                    }
+                });
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                swipeContainer.setRefreshing(false);
-
-                super.onFailure(statusCode, headers, responseString, throwable);
             }
         });
     }

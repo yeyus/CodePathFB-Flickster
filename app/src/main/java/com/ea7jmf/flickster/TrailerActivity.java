@@ -9,22 +9,26 @@ import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cz.msebera.android.httpclient.Header;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import static android.content.ContentValues.TAG;
 
 public class TrailerActivity extends YouTubeBaseActivity {
 
-    AsyncHttpClient client;
+    OkHttpClient client;
     int movieId;
 
     @BindView(R.id.player) YouTubePlayerView youTubePlayerView;
@@ -36,7 +40,7 @@ public class TrailerActivity extends YouTubeBaseActivity {
         ButterKnife.bind(this);
 
         String youtubeApiKey;
-        client = new AsyncHttpClient();
+        client = new OkHttpClient();
         movieId = getIntent().getIntExtra("movie_id", -1);
 
 
@@ -51,7 +55,11 @@ public class TrailerActivity extends YouTubeBaseActivity {
                         public void onInitializationSuccess(YouTubePlayer.Provider provider,
                                                             YouTubePlayer youTubePlayer, boolean b) {
                             String url = String.format("https://api.themoviedb.org/3/movie/%d/trailers?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed", movieId);
-                            client.get(url, getTrailerDataHandler(youTubePlayer));
+                            Request request = new Request.Builder()
+                                    .url(url)
+                                    .build();
+
+                            client.newCall(request).enqueue(getTrailerDataHandler(youTubePlayer));
                         }
 
                         @Override
@@ -70,14 +78,21 @@ public class TrailerActivity extends YouTubeBaseActivity {
 
     }
 
-    private JsonHttpResponseHandler getTrailerDataHandler(final YouTubePlayer youTubePlayer) {
+    private Callback getTrailerDataHandler(final YouTubePlayer youTubePlayer) {
 
-        return new JsonHttpResponseHandler() {
+        return new Callback() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+            public void onResponse(Call call, final Response response) throws IOException {
                 JSONArray youtubeTrailerArray = null;
+
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected code " + response);
+                }
+
                 try {
-                    youtubeTrailerArray = response.getJSONArray("youtube");
+                    String responseData = response.body().string();
+                    JSONObject json = new JSONObject(responseData);
+                    youtubeTrailerArray = json.getJSONArray("youtube");
                     if (youtubeTrailerArray.length() > 0) {
                         JSONObject trailerJson = (JSONObject) youtubeTrailerArray.get(0);
                         youTubePlayer.cueVideo(trailerJson.getString("source"));
@@ -88,8 +103,8 @@ public class TrailerActivity extends YouTubeBaseActivity {
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
             }
         };
     }
