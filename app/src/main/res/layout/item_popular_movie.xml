@@ -35,5 +35,8 @@
         android:layout_alignParentEnd="true"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:padding="10dp"
-        android:background="@drawable/title_gradient"/>
+        android:background="@drawable/title_gradient"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:maxLines="1"/>
 </RelativeLayout>
