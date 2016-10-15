@@ -4,4 +4,5 @@
     <dimen name="activity_vertical_margin">0dp</dimen>
     <dimen name="poster_text_margin">10dp</dimen>
     <dimen name="detail_overview_margin">15dp</dimen>
+    <dimen name="play_button_size">75dp</dimen>
 </resources>

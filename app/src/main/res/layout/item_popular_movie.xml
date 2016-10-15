@@ -14,4 +14,26 @@
         android:id="@+id/ivMovieFrame"
         android:maxHeight="160dp"
         android:scaleType="centerCrop" />
+
+    <ImageView
+        app:srcCompat="@drawable/ic_play_circle_outline_black_24dp"
+        android:id="@+id/ivPlay"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_width="@dimen/play_button_size"
+        android:layout_height="@dimen/play_button_size"/>
+
+    <TextView
+        tools:text="Movie Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/tvMovieTitle"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:padding="10dp"
+        android:background="@drawable/title_gradient"/>
 </RelativeLayout>

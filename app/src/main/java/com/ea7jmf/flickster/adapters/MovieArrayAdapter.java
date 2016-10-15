@@ -33,6 +33,7 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
     }
 
     private static class FullBackdropItemViewHolder {
+        TextView tvTitle;
         ImageView ivBackdrop;
     }
 
@@ -98,6 +99,7 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
                     convertView = getInflatedLayoutForType(type);
 
                     fbViewHolder.ivBackdrop = (ImageView) convertView.findViewById(R.id.ivMovieFrame);
+                    fbViewHolder.tvTitle = (TextView) convertView.findViewById(R.id.tvMovieTitle);
 
                     convertView.setTag(fbViewHolder);
                 } else {
@@ -105,6 +107,8 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
                 }
 
                 fbViewHolder.ivBackdrop.setImageResource(0);
+
+                fbViewHolder.tvTitle.setText(movie.getOriginalTitle());
 
                 imageUrl = movie.getBackdropPath();
                 Picasso.with(getContext())
