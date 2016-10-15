@@ -16,6 +16,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 import static android.content.ContentValues.TAG;
@@ -25,10 +27,13 @@ public class TrailerActivity extends YouTubeBaseActivity {
     AsyncHttpClient client;
     int movieId;
 
+    @BindView(R.id.player) YouTubePlayerView youTubePlayerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trailer);
+        ButterKnife.bind(this);
 
         String youtubeApiKey;
         client = new AsyncHttpClient();
@@ -39,9 +44,6 @@ public class TrailerActivity extends YouTubeBaseActivity {
             ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
             Bundle bundle = ai.metaData;
             youtubeApiKey = bundle.getString("YOUTUBE_API_KEY");
-
-            YouTubePlayerView youTubePlayerView =
-                    (YouTubePlayerView) findViewById(R.id.player);
 
             youTubePlayerView.initialize(youtubeApiKey,
                     new YouTubePlayer.OnInitializedListener() {

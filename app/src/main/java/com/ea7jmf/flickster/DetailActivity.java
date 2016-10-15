@@ -13,25 +13,23 @@ import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class DetailActivity extends AppCompatActivity {
 
-    ImageView ivMovieFrame;
-    ImageView ivPlay;
-    RatingBar ratingBar;
-    TextView tvRating;
-    TextView tvOverview;
+    @BindView(R.id.ivMovieFrame) ImageView ivMovieFrame;
+    @BindView(R.id.ivPlay) ImageView ivPlay;
+    @BindView(R.id.ratingBar) RatingBar ratingBar;
+    @BindView(R.id.tvRating) TextView tvRating;
+    @BindView(R.id.tvOverview) TextView tvOverview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Movie movie = getIntent().getParcelableExtra("movie");
         setContentView(R.layout.activity_detail);
-
-        ivMovieFrame = (ImageView) findViewById(R.id.ivMovieFrame);
-        ivPlay = (ImageView) findViewById(R.id.ivPlay);
-        ratingBar = (RatingBar) findViewById(R.id.ratingBar);
-        tvRating = (TextView) findViewById(R.id.tvRating);
-        tvOverview = (TextView) findViewById(R.id.tvOverview);
+        ButterKnife.bind(this);
 
         getSupportActionBar().setTitle(movie.getOriginalTitle());
 
