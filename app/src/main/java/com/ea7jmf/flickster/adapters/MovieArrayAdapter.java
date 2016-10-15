@@ -16,6 +16,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
+
 import static com.ea7jmf.flickster.R.id.tvOverview;
 import static com.ea7jmf.flickster.R.id.tvTitle;
 
@@ -90,6 +92,7 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
                 Picasso.with(getContext())
                         .load(imageUrl)
                         .placeholder(R.mipmap.poster_placeholder)
+                        .transform(new RoundedCornersTransformation(10, 10))
                         .into(piViewHolder.ivPoster);
                 break;
             case FULL_BACKDROP_ITEM:
@@ -114,6 +117,7 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
                 Picasso.with(getContext())
                         .load(imageUrl)
                         .placeholder(R.drawable.video_placeholder)
+                        .transform(new RoundedCornersTransformation(10, 10))
                         .into(fbViewHolder.ivBackdrop);
                 break;
         }
