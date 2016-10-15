@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnItemClick;
 import cz.msebera.android.httpclient.Header;
 
 public class MovieActivity extends AppCompatActivity {
@@ -46,30 +47,6 @@ public class MovieActivity extends AppCompatActivity {
 
         client = new AsyncHttpClient();
         fetchNowPlaying();
-
-        lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int typeOrdinal = parent.getAdapter().getItemViewType(position);
-                MovieArrayAdapter.ItemType type = MovieArrayAdapter.ItemType.values()[typeOrdinal];
-
-                Intent i;
-                switch(type) {
-                    case FULL_BACKDROP_ITEM:
-                        i = new Intent(MovieActivity.this, TrailerActivity.class);
-                        i.putExtra("movie_id", movies.get(position).getId());
-                        startActivity(i);
-                        break;
-                    case POSTER_ITEM:
-                        i = new Intent(MovieActivity.this, DetailActivity.class);
-                        i.putExtra("movie", movies.get(position));
-                        startActivity(i);
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unknown list item type");
-                }
-            }
-        });
 
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -109,5 +86,27 @@ public class MovieActivity extends AppCompatActivity {
                 super.onFailure(statusCode, headers, responseString, throwable);
             }
         });
+    }
+
+    @OnItemClick(R.id.lvMovies)
+    public void listItemClick(AdapterView<?> parent, View view, int position, long id) {
+        int typeOrdinal = parent.getAdapter().getItemViewType(position);
+        MovieArrayAdapter.ItemType type = MovieArrayAdapter.ItemType.values()[typeOrdinal];
+
+        Intent i;
+        switch(type) {
+            case FULL_BACKDROP_ITEM:
+                i = new Intent(MovieActivity.this, TrailerActivity.class);
+                i.putExtra("movie_id", movies.get(position).getId());
+                startActivity(i);
+                break;
+            case POSTER_ITEM:
+                i = new Intent(MovieActivity.this, DetailActivity.class);
+                i.putExtra("movie", movies.get(position));
+                startActivity(i);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown list item type");
+        }
     }
 }
