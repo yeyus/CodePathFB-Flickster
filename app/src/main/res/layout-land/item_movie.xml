@@ -11,6 +11,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:adjustViewBounds="true"
         android:id="@+id/ivMovieImage"
         android:layout_marginRight="@dimen/poster_text_margin" />
 
