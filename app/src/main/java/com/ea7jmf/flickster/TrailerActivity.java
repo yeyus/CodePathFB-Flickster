@@ -30,6 +30,7 @@ public class TrailerActivity extends YouTubeBaseActivity {
 
     OkHttpClient client;
     int movieId;
+    boolean autoplay;
 
     @BindView(R.id.player) YouTubePlayerView youTubePlayerView;
 
@@ -42,7 +43,7 @@ public class TrailerActivity extends YouTubeBaseActivity {
         String youtubeApiKey;
         client = new OkHttpClient();
         movieId = getIntent().getIntExtra("movie_id", -1);
-
+        autoplay = getIntent().getBooleanExtra("autoplay", false);
 
         try {
             ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
@@ -95,7 +96,11 @@ public class TrailerActivity extends YouTubeBaseActivity {
                     youtubeTrailerArray = json.getJSONArray("youtube");
                     if (youtubeTrailerArray.length() > 0) {
                         JSONObject trailerJson = (JSONObject) youtubeTrailerArray.get(0);
-                        youTubePlayer.cueVideo(trailerJson.getString("source"));
+                        if (autoplay) {
+                            youTubePlayer.loadVideo(trailerJson.getString("source"));
+                        } else {
+                            youTubePlayer.cueVideo(trailerJson.getString("source"));
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

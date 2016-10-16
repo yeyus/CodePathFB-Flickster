@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.Window;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -42,12 +44,40 @@ public class MovieActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         setContentView(R.layout.activity_movie);
         ButterKnife.bind(this);
 
         movies = new ArrayList<>();
         movieAdapter = new MovieArrayAdapter(this, movies);
         lvItems.setAdapter(movieAdapter);
+
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.mipmap.ic_launcher);
+
+        lvItems.setOnScrollListener(new AbsListView.OnScrollListener() {
+            int mLastFirstVisibleItem = 0;
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {   }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (view.getId() == lvItems.getId()) {
+                    final int currentFirstVisibleItem = lvItems.getFirstVisiblePosition();
+
+                    if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+                        // getSherlockActivity().getSupportActionBar().hide();
+                        getSupportActionBar().hide();
+                    } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
+                        // getSherlockActivity().getSupportActionBar().show();
+                        getSupportActionBar().show();
+                    }
+
+                    mLastFirstVisibleItem = currentFirstVisibleItem;
+                }
+            }
+        });
 
         client = new OkHttpClient();
         fetchNowPlaying();
@@ -125,12 +155,14 @@ public class MovieActivity extends AppCompatActivity {
             case FULL_BACKDROP_ITEM:
                 i = new Intent(MovieActivity.this, TrailerActivity.class);
                 i.putExtra("movie_id", movies.get(position).getId());
+                i.putExtra("autoplay", true);
                 startActivity(i);
                 break;
             case POSTER_ITEM:
                 i = new Intent(MovieActivity.this, DetailActivity.class);
                 i.putExtra("movie", movies.get(position));
                 startActivity(i);
+                this.overridePendingTransition(R.anim.animation_enter, R.anim.animation_leave);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown list item type");

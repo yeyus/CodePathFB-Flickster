@@ -18,7 +18,15 @@ The following **optional** features are implemented:
 
 * [x] User can **pull-to-refresh** popular stream to get the latest movies.
 * [x] Display a nice default [placeholder graphic](http://guides.codepath.com/android/Displaying-Images-with-the-Picasso-Library#configuring-picasso) for each image during loading.
-* [] Improved the user interface through styling and coloring.
+* [x] Improved the user interface through styling and coloring.    
+    * [x] Use dark theme instead
+    * [x] ActionBar colors
+    * [x] ActionBar will hide when scrolling in the main activity
+    * [x] Launcher icon in ActionBar
+    * [x] Gradient and movie title for popular movies
+    * [x] Use custom style rating bar using app launcher icon as stars
+    * [x] Remove default padding
+    * [x] Activity transition
 
 The following **bonus** features are implemented:
 
